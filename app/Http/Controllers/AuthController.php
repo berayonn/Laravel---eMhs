@@ -1,0 +1,54 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+
+use App\User;
+use Illuminate\Support\Facades\Auth;
+
+class AuthController extends Controller
+{
+    public function register()
+    {
+        return view('/register');
+    }
+
+    public function simpan(Request $request)
+    {
+        User::create([
+            'nik' => $request->nik,
+            'name' => $request->name,
+            'no_hp' => $request->no_hp,
+            'email' => $request->email,
+            'password' => bcrypt($request->password)
+        ]);
+        return redirect('/login');
+    }
+
+    public function login()
+    {
+        return view('login');
+    }
+
+    public function ceklogin(Request $request)
+    {
+        if (Auth::attempt([
+            'email' => $request->email,
+            'password' => $request->password,
+        ]))
+        {
+            return redirect('/home')->with('alerts', 'Anda Berhasil Login');
+        }
+        else
+        {
+            return redirect('/login')->with('alerts', 'Silahkan Masukkan Email atau Password yang Benar');
+        }
+    }
+
+    public function logout()
+    {
+        Auth::logout();
+        return redirect('/login');
+    }
+}
